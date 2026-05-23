@@ -1,12 +1,13 @@
 import React from 'react';
-import type { InterviewStepDTO, KanbanCandidateDTO } from '../../types/kanban.types';
+import type { InterviewStep, KanbanCandidate } from '../../types/kanban.types';
 import CandidateCard, { parseDragPayload } from './CandidateCard';
+import './kanban.css';
 
 const DRAG_PAYLOAD_TYPE = 'application/x-kanban-candidate';
 
 interface KanbanColumnProps {
-  step: InterviewStepDTO;
-  candidates: KanbanCandidateDTO[];
+  step: InterviewStep;
+  candidates: KanbanCandidate[];
   onDrop: (
     candidateId: string,
     applicationId: string,
@@ -40,8 +41,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({ step, candidates, onDrop })
       aria-labelledby={headingId}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
-      className="d-flex flex-column bg-light border rounded p-3 flex-grow-1 w-100"
-      style={{ minHeight: '280px', minWidth: '0' }}
+      className="kanban-column"
     >
       <header className="mb-3">
         <h2 id={headingId} className="h6 text-uppercase text-muted mb-1">
@@ -49,7 +49,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({ step, candidates, onDrop })
         </h2>
         <p className="small mb-0">{candidates.length} candidatos</p>
       </header>
-      <div className="d-flex flex-column flex-grow-1">
+      <div className="kanban-column__cards">
         {candidates.map((candidate) => (
           <CandidateCard key={candidate.applicationId} candidate={candidate} />
         ))}

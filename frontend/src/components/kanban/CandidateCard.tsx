@@ -1,5 +1,5 @@
 import React from 'react';
-import type { KanbanCandidateDTO } from '../../types/kanban.types';
+import type { KanbanCandidate } from '../../types/kanban.types';
 
 const DRAG_PAYLOAD_TYPE = 'application/x-kanban-candidate';
 
@@ -9,7 +9,7 @@ export interface KanbanDragPayload {
 }
 
 interface CandidateCardProps {
-  candidate: KanbanCandidateDTO;
+  candidate: KanbanCandidate;
 }
 
 export const serializeDragPayload = (payload: KanbanDragPayload): string =>
@@ -27,8 +27,27 @@ export const parseDragPayload = (raw: string): KanbanDragPayload | null => {
   }
 };
 
-const formatScore = (score: number | null): string => {
-  if (score === null || Number.isNaN(score)) {
+const scoreBadgeClass = (score: number | null): string => {
+  if (score === null || score === undefined) {
+    return 'bg-secondary';
+  }
+  if (Number.isNaN(score)) {
+    return 'bg-secondary';
+  }
+  if (score >= 4) {
+    return 'bg-success';
+  }
+  if (score >= 2.5) {
+    return 'bg-warning text-dark';
+  }
+  return 'bg-danger';
+};
+
+const formatScoreLabel = (score: number | null): string => {
+  if (score === null || score === undefined) {
+    return 'Sin evaluar';
+  }
+  if (Number.isNaN(score)) {
     return 'Sin evaluar';
   }
   return score.toFixed(1);
@@ -50,11 +69,11 @@ const CandidateCard: React.FC<CandidateCardProps> = ({ candidate }) => {
       onDragStart={handleDragStart}
       className="card shadow-sm mb-2 border-0"
     >
-      <div className="card-body py-2 px-3">
-        <h3 className="h6 card-title mb-1">{candidate.fullName}</h3>
-        <p className="card-text small text-muted mb-0">
-          Puntuación media: <strong>{formatScore(candidate.averageScore)}</strong>
-        </p>
+      <div className="card-body py-2 px-3 d-flex justify-content-between align-items-start gap-2">
+        <h3 className="h6 card-title mb-0">{candidate.fullName}</h3>
+        <span className={`badge ${scoreBadgeClass(candidate.averageScore)}`}>
+          {formatScoreLabel(candidate.averageScore)}
+        </span>
       </div>
     </article>
   );

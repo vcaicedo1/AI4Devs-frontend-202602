@@ -3,6 +3,23 @@ import { Position } from '../../domain/models/Position';
 
 const prisma = new PrismaClient();
 
+export const getAllPositionsService = async () => {
+    const positions = await prisma.position.findMany({
+        where: { isVisible: true },
+        include: { company: true },
+        orderBy: { id: 'asc' },
+    });
+
+    return positions.map((position) => ({
+        id: position.id,
+        title: position.title,
+        status: position.status,
+        manager: position.contactInfo ?? position.company.name,
+        applicationDeadline: position.applicationDeadline?.toISOString() ?? null,
+        location: position.location,
+    }));
+};
+
 const calculateAverageScore = (interviews: any[]) => {
     if (interviews.length === 0) return 0;
     const totalScore = interviews.reduce((acc, interview) => acc + (interview.score || 0), 0);
